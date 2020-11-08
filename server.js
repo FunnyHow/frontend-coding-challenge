@@ -36,7 +36,7 @@ function successResponse(res) {
 }
 
 function checkHeaders(req, res) {
-  if (req.headers['content-type'] !== 'application/json') {
+  if (!req.headers['content-type'].startsWith('application/json')) {
     error(res, 400, 'Invalid headers')
     return false
   }

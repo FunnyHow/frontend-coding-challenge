@@ -36,11 +36,24 @@
       }
     },
     methods: {
-      submit () {
+      submit (diet) {
+        this.$store.commit('survey/incrementCurrentStep')
         this.$router.push('/dob')
       },
       back () {
+        this.$store.commit('survey/decrementCurrentStep')
         this.$router.push('/goals')
+      },
+      addDiet (diet) {
+        this.$store.commit('survey/addDiet', diet)
+      },
+      isSelected (diet) {
+        return this.$store.getters['survey/diet'] === diet
+      }
+    },
+    computed: {
+      isDisabled () {
+        return this.$store.getters['survey/diet'] === ''
       }
     }
   }
@@ -52,7 +65,7 @@
       <div class="survey-questions__diet align-center">
         <h1>Do you follow a particular diet?</h1>
         <div class="spacer sp__top--sm"></div>
-        <check-button v-for="(diet, key) in diets" :key="key" :text="diet.name"></check-button>
+        <check-button v-for="(diet, key) in diets" :key="key" :value="diet.name" :selected="isSelected(diet.name)" :disabled="false" :text="diet.name" @click="addDiet"></check-button>
         <div class="grid-x button-container">
           <div class="cell auto">
             <div class="back-button-container">
@@ -60,7 +73,7 @@
             </div>
           </div>
           <div class="cell auto align-right">
-            <thv-button element="button" size="large" @click="submit">Next</thv-button>
+            <thv-button element="button" size="large" :disabled="isDisabled" @click="submit">Next</thv-button>
           </div>
         </div>
       </div>

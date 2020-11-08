@@ -11,7 +11,9 @@
     props: {
       name: {
         type: String,
-        default: ''
+        default: function () {
+          return this.$store.getters['survey/name']
+        }
       }
     },
     data () {
@@ -40,10 +42,26 @@
     },
     methods: {
       submit () {
+        this.$store.commit('survey/incrementCurrentStep')
         this.$router.push('/diet')
       },
       back () {
+        this.$store.commit('survey/decrementCurrentStep')
         this.$router.push('/name')
+      },
+      toggleGoal (goal) {
+        this.$store.commit('survey/toggleGoal', goal)
+      },
+      isSelected (goal) {
+        return this.$store.getters['survey/goals'].includes(goal)
+      },
+      isMaxSelected () {
+        return this.$store.getters['survey/goals'].length >= 4
+      }
+    },
+    computed: {
+      isDisabled () {
+        return this.$store.getters['survey/goals'].length < 1
       }
     }
   }
@@ -56,7 +74,7 @@
         <h1>Nice to meet you {{ name }}. What would you like to focus on?</h1>
         <p class="body--large question-description">Choose up to four</p>
         <div class="spacer sp__top--sm"></div>
-        <check-button v-for="(goal, key) in goals" :key="key" :text="goal.name"></check-button>
+        <check-button v-for="(goal, key) in goals" :key="key" :value="goal.name" :selected="isSelected(goal.name)" :text="goal.name" :disabled="!isSelected(goal.name) && isMaxSelected()" @click="toggleGoal"></check-button>
         <div class="grid-x button-container">
           <div class="cell auto">
             <div class="back-button-container">
@@ -64,7 +82,7 @@
             </div>
           </div>
           <div class="cell auto align-right">
-            <thv-button element="button" size="large" @click="submit">Next</thv-button>
+            <thv-button element="button" size="large" :disabled="isDisabled" @click="submit">Next</thv-button>
           </div>
         </div>
       </div>

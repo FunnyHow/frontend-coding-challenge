@@ -15,6 +15,8 @@
     },
     methods: {
       submit () {
+        this.$store.commit('survey/addName', this.name)
+        this.$store.commit('survey/incrementCurrentStep')
         this.$router.push('/goals')
       }
     }
